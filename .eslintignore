@@ -1,0 +1,11 @@
+# the usual suspects
+/node_modules
+.DS_Store
+
+# local files
+/configuration.js
+/configuration.sh
+/fiddle.js
+
+# built files
+/dist
