@@ -2,24 +2,27 @@
   "name": "oamerge",
   "version": "0.0.0-prerelease",
   "description": "Merge and share OpenAPI endpoints.",
-  "bin": "bin.js",
+  "bin": "cli.js",
   "type": "module",
-  "module": "dist/index.js",
-  "main": "dist/index.cjs",
+  "module": "dist/oamerge.js",
+  "main": "dist/oamerge.cjs",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/oamerge.js",
+      "require": "./dist/oamerge.cjs"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "test": "eslint '**/*.js' --fix",
+    "test": "npm run test:lint && npm run test:unit",
+    "test:lint": "eslint 'src/**/*.js' 'rollup.config.js' 'cli.js'",
+    "test:unit": "uvu src '.test.js$'",
     "prepublishOnly": "npm run build",
     "build": "rollup -c"
   },
   "files": [
     "dist",
+    "licensing",
     "bin.js",
     "CHANGELOG.md",
     "README.md",
@@ -42,7 +45,12 @@
   },
   "homepage": "https://oamerge.com",
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "14.1.0",
+    "@rollup/plugin-replace": "4.0.0",
     "eslint": "8.22.0",
-    "rollup": "^2.79.0"
+    "mri": "1.2.0",
+    "rollup": "2.79.0",
+    "sade": "1.8.1",
+    "uvu": "0.5.6"
   }
 }
