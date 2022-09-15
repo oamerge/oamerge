@@ -7,9 +7,6 @@
 /configuration.sh
 /fiddle.js
 
-# globbed things
-globbed-*.js
-
 # built things
 /dist
-/example/build
+/test
