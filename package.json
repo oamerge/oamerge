@@ -52,6 +52,7 @@
     "@changesets/cli": "2.26.0",
     "@rollup/plugin-node-resolve": "14.1.0",
     "@rollup/plugin-replace": "4.0.0",
+    "cheap-watch": "1.0.4",
     "eslint": "8.22.0",
     "mri": "1.2.0",
     "rollup": "2.79.0",
