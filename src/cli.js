@@ -3,12 +3,11 @@ import { isAbsolute, resolve, join } from 'node:path'
 import sade from 'sade'
 
 import { mutateConsoleLogger } from './lib/mutate-console-logger.js'
+import { configWatcherLoader } from './lib/config-watcher-loader.js'
 import { oamerge } from './oamerge.js'
 
 const VERSION = '__VERSION__'
 const DEFAULT_CONFIG = 'oamerge.config.js'
-const DEFAULT_EXTENSION = '@'
-const DEFAULT_API = '/'
 
 const argvIncludes = (...keys) => !!keys.find(key => process.argv.includes(key))
 mutateConsoleLogger({
@@ -16,46 +15,6 @@ mutateConsoleLogger({
 	printDebug: argvIncludes('--verbose'),
 	useColors: !argvIncludes('--no-colors'),
 })
-
-const normalizeInputString = string => {
-	const normalized = {
-		dir: string,
-		ext: DEFAULT_EXTENSION,
-		api: DEFAULT_API,
-	}
-	if (string.includes(';') || string.includes('=')) {
-		for (const pair of string.split(';')) {
-			const [ key, value ] = pair.split('=')
-			if (key && value && normalized[key]) normalized[key] = value
-		}
-	}
-	console.debug(`Normalized input string "${string}":`, normalized)
-	return normalized
-}
-
-const importModules = async (prefix, moduleNames) => {
-	moduleNames = Array.isArray(moduleNames)
-		? moduleNames
-		: (moduleNames ? [ moduleNames ] : [])
-	const imported = []
-	let hasErrors
-	for (const name of moduleNames) {
-		try {
-			const mod = await import(name)
-			if (mod?.default) imported.push(mod.default)
-			else {
-				hasErrors = true
-				console.error(`${prefix} module "${name}" did not have a default export. To use ${prefix.toLowerCase()}s with named exports, you will need to use a configuration file.`)
-			}
-		} catch (error) {
-			hasErrors = true
-			console.error(`${prefix} "${name}" could not be loaded:`, error.code)
-			console.debug(error)
-		}
-	}
-	if (hasErrors) process.exit(1)
-	return imported
-}
 
 sade('oamerge', true)
 	.version(VERSION)
@@ -92,45 +51,60 @@ sade('oamerge', true)
 			? (isAbsolute(opts.cwd) ? opts.cwd : resolve(opts.cwd))
 			: process.cwd()
 
-		const absoluteResolver = dir => isAbsolute(dir) ? dir : resolve(opts.cwd, dir)
-
-		if (typeof opts.config === 'string') opts.config = absoluteResolver(opts.config)
-		else opts.config = join(opts.cwd, DEFAULT_CONFIG)
-
-		if (opts.output) opts.output = absoluteResolver(opts.output)
-
-		// Here we are normalizing the "input" CLI option to the normalized "inputs"
-		// and dropping the "input" to avoid confusion downstream.
-		if (opts.input) {
-			const inputs = []
-			for (const input of (Array.isArray(opts.input) ? opts.input : [ opts.input ])) {
-				const normalized = normalizeInputString(input)
-				if (normalized.dir) normalized.dir = absoluteResolver(normalized.dir)
-				inputs.push(normalized)
+		const remappedProperties = [
+			[ 'input', 'inputs' ],
+			[ 'generator', 'generators' ],
+			[ 'loader', 'loaders' ],
+		]
+		for (const [ from, to ] of remappedProperties) {
+			if (opts[from]) {
+				opts[to] = Array.isArray(opts[from]) ? opts[from] : [ opts[from] ]
+				delete opts[from]
 			}
-			opts.inputs = inputs
-			delete opts.input
 		}
 
-		let start = Date.now()
-		Promise.all([
-			importModules('Generator', opts.generator),
-			importModules('Loader', opts.loader),
-		])
-			.then(([ generators, loaders ]) => {
-				opts.generators = generators
-				delete opts.generator
-				opts.loaders = loaders
-				delete opts.loader
-				return oamerge(opts)
+		let configFilepath
+		if (typeof opts.config === 'string') configFilepath = isAbsolute(opts.config)
+			? opts.config
+			: resolve(opts.cwd, opts.config)
+		else if (opts.config) configFilepath = join(opts.cwd, DEFAULT_CONFIG)
+
+		// Very simple throttle to only run oamerge one at a time, but if the config file
+		// changes while it's running, queue up one more re-run.
+		let running
+		let mostRecentConfig
+		let oneMoreToGo
+		const runOamerge = async () => {
+			if (running) oneMoreToGo = true
+			running = true
+			return oamerge(Object.assign({}, mostRecentConfig || {}, opts))
+				.then(() => {
+					running = false
+					if (oneMoreToGo) {
+						oneMoreToGo = false
+						return runOamerge()
+					}
+				})
+		}
+
+		const start = Date.now()
+		const success = () => {
+			if (!opts.watch) console.info(`Build completed after ${Date.now() - start}ms.`)
+			process.exit(0)
+		}
+		const fail = error => {
+			console.error('Unexpected error from OAMerge!', error)
+			process.exit(1)
+		}
+
+		if (configFilepath) {
+			const emitter = configWatcherLoader(configFilepath, opts.watch)
+			emitter.on('config', config => {
+				mostRecentConfig = config
+				runOamerge().then(success).catch(fail)
 			})
-			.then(() => {
-				if (!opts.watch) console.info(`Build completed after ${Date.now() - start}ms.`)
-				process.exit(0)
-			})
-			.catch(error => {
-				console.error('Unexpected error from OAMerge!', error)
-				process.exit(1)
-			})
+		} else {
+			runOamerge().then(success).catch(fail)
+		}
 	})
 	.parse(process.argv)
