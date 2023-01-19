@@ -1,7 +1,7 @@
 {
   "name": "oamerge",
   "version": "0.0.0-prerelease",
-  "description": "Merge and share OpenAPI endpoints.",
+  "description": "Merge and share OpenAPI endpoints and schemas.",
   "bin": "cli.js",
   "type": "module",
   "module": "dist/oamerge.js",
@@ -24,7 +24,7 @@
   "files": [
     "dist",
     "licensing",
-    "bin.js",
+    "cli.js",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"

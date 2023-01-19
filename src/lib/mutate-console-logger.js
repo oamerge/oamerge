@@ -19,7 +19,9 @@ const colors = {
  */
 export const mutateConsoleLogger = ({ printDate, useColors, printDebug }) => {
 	for (const level in colors) {
+		// eslint-disable-next-line no-console
 		const original = console[level]
+		// eslint-disable-next-line no-console
 		console[level] = (...args) => {
 			const prefix = printDate
 				? `[${new Date().toISOString()}]`

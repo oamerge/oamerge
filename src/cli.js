@@ -7,6 +7,8 @@ import { oamerge } from './oamerge.js'
 
 const VERSION = '__VERSION__'
 const DEFAULT_CONFIG = 'oamerge.config.js'
+const DEFAULT_EXTENSION = '@'
+const DEFAULT_API = '/'
 
 const argvIncludes = (...keys) => !!keys.find(key => process.argv.includes(key))
 mutateConsoleLogger({
@@ -15,15 +17,38 @@ mutateConsoleLogger({
 	useColors: !argvIncludes('--no-colors'),
 })
 
+const normalizeInputString = string => {
+	const normalized = {
+		dir: string,
+		ext: DEFAULT_EXTENSION,
+		api: DEFAULT_API,
+	}
+	if (string.includes(';') || string.includes('=')) {
+		for (const pair of string.split(';')) {
+			const [ key, value ] = pair.split('=')
+			if (key && value && normalized[key]) normalized[key] = value
+		}
+	}
+	console.debug(`Normalized input string "${string}":`, normalized)
+	return normalized
+}
+
 sade('oamerge', true)
 	.version(VERSION)
+
 	.option('-c, --config', `Location of the configuration file to use. Default: ${DEFAULT_CONFIG}`)
 	.option('-i, --input', 'Folders to ingest. Multiple allowed, order is preserved.')
-	.option('-o, --output', 'Folder to write output files.')
+	.option('-o, --output', 'Folder to write generated files.')
 	.option('--cwd', 'Set the working directory to change path resolution.')
 	.option('--no-colors', 'Disable color printing to console.')
 	.option('-w, --watch', 'Rebuild on detected file changes.')
 	.option('--verbose', 'Log debug information.')
+
+	.example(`-c # Use the default configuration file (${DEFAULT_CONFIG}).`)
+	.example('-c my-api.config.js # Use a different configuration file.')
+	.example('-c -i ./folder1 -i ./folder2 # Multiple input folders, use default extension (@) and api prefix (/).')
+	.example('-c -i "dir=./folder1;ext=@;api=/" # Specify all input values (careful to wrap in quotes).')
+
 	.action(opts => {
 		// These are only used for the CLI, so in order to avoid confusion
 		// later down the stream they are removed here.
@@ -31,7 +56,7 @@ sade('oamerge', true)
 		delete opts['verbose']
 
 		if (!opts.config && (!opts.input || !opts.output)) {
-			console.error('Must specify input(s) and output if no config file specified.')
+			console.error('Must specify input(s) and output folder if no configuration file is specified.')
 			process.exit(1)
 		}
 
@@ -44,14 +69,26 @@ sade('oamerge', true)
 		if (typeof opts.config === 'string') opts.config = absoluteResolver(opts.config)
 		else opts.config = join(opts.cwd, DEFAULT_CONFIG)
 
-		if (opts.input) opts.input = absoluteResolver(opts.input)
 		if (opts.output) opts.output = absoluteResolver(opts.output)
 
-		const start = Date.now()
+		// Here we are normalizing the "input" CLI option to the normalized "inputs"
+		// and dropping the "input" to avoid confusion downstream.
+		if (opts.input) {
+			const inputs = []
+			for (const input of (Array.isArray(opts.input) ? opts.input : [ opts.input ])) {
+				const normalized = normalizeInputString(input)
+				if (normalized.dir) normalized.dir = absoluteResolver(normalized.dir)
+				inputs.push(normalized)
+			}
+			opts.inputs = inputs
+			delete opts.input
+		}
+
+		let start = Date.now()
 		oamerge(opts)
 			.then(() => {
-				if (!opts.watch) console.log(`Build completed after ${Date.now() - start}ms.`)
-				process.exit(1)
+				if (!opts.watch) console.info(`Build completed after ${Date.now() - start}ms.`)
+				process.exit(0)
 			})
 			.catch(error => {
 				console.error('Unexpected error from OAMerge!', error)

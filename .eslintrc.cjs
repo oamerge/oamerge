@@ -68,6 +68,9 @@ module.exports = {
 					'error',
 					'unix',
 				],
+				// This is the list from the mutate-console-logger, only these console
+				// statements are supported in OA Merge.
+				'no-console': [ 'error', { allow: [ 'warn', 'debug', 'info', 'error' ] }],
 				'no-eval': 'error',
 				'no-implied-eval': 'error',
 				'no-irregular-whitespace': [
@@ -124,3 +127,5 @@ module.exports = {
 		},
 	],
 }
+
+

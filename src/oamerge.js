@@ -1,3 +1,3 @@
-export const oamerge = async ({ input, output, config, cwd, watch }) => {
-	console.log({ input, output, config, cwd, watch })
+export const oamerge = async ({ inputs, output, config, cwd, watch }) => {
+	console.debug({ inputs, output, config, cwd, watch })
 }
