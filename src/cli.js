@@ -33,26 +33,28 @@ const normalizeInputString = string => {
 	return normalized
 }
 
-const loadGenerators = async moduleNames => {
-	moduleNames = Array.isArray(moduleNames) ? moduleNames : [ moduleNames ]
-	const generators = []
+const importModules = async (prefix, moduleNames) => {
+	moduleNames = Array.isArray(moduleNames)
+		? moduleNames
+		: (moduleNames ? [ moduleNames ] : [])
+	const imported = []
 	let hasErrors
 	for (const name of moduleNames) {
 		try {
 			const mod = await import(name)
-			if (mod?.default) generators.push(mod.default)
+			if (mod?.default) imported.push(mod.default)
 			else {
 				hasErrors = true
-				console.error(`Generator module "${name}" did not have a default export. To use generators with named exports, you will need to use a configuration file.`)
+				console.error(`${prefix} module "${name}" did not have a default export. To use ${prefix.toLowerCase()}s with named exports, you will need to use a configuration file.`)
 			}
 		} catch (error) {
 			hasErrors = true
-			console.error(`Generator "${name}" could not be loaded:`, error.code)
+			console.error(`${prefix} "${name}" could not be loaded:`, error.code)
 			console.debug(error)
 		}
 	}
 	if (hasErrors) process.exit(1)
-	return generators
+	return imported
 }
 
 sade('oamerge', true)
@@ -61,6 +63,7 @@ sade('oamerge', true)
 	.option('-c, --config', `Location of the configuration file to use. Default: ${DEFAULT_CONFIG}`)
 	.option('-i, --input', 'Folders to ingest. Multiple allowed, order is preserved.')
 	.option('-o, --output', 'Folder to write generated files.')
+	.option('-l, --loader', 'The name of the loader plugin. Multiple allowed, order is preserved.')
 	.option('-g, --generator', 'The name of the generator plugin. Multiple allowed, order is preserved.')
 	.option('--cwd', 'Set the working directory to change path resolution.')
 	.option('--no-colors', 'Disable color printing to console.')
@@ -72,6 +75,7 @@ sade('oamerge', true)
 	.example('-c -i ./folder1 -i ./folder2 # Multiple input folders, use default extension (@) and api prefix (/).')
 	.example('-c -i "dir=./folder1;ext=@;api=/" # Specify all input values (careful to wrap in quotes).')
 	.example('-c -g @oamerge/generator-routes # Use a generator with its default settings.')
+	.example('-c -g @oamerge/loader-markdown # Use a loader with its default settings.')
 
 	.action(opts => {
 		// These are only used for the CLI, so in order to avoid confusion
@@ -109,14 +113,15 @@ sade('oamerge', true)
 		}
 
 		let start = Date.now()
-		loadGenerators(opts.generator)
-			.then(generators => {
+		Promise.all([
+			importModules('Generator', opts.generator),
+			importModules('Loader', opts.loader),
+		])
+			.then(([ generators, loaders ]) => {
 				opts.generators = generators
 				delete opts.generator
-				if (generators.length) {
-					console.info(`Loading generators took ${Date.now() - start}ms`)
-					start = Date.now()
-				}
+				opts.loaders = loaders
+				delete opts.loader
 				return oamerge(opts)
 			})
 			.then(() => {
