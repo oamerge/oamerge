@@ -6,7 +6,7 @@ Considering contributing? Thank you so much!
 
 The most helpful thing you can do is let us know if something is wrong or doesn't make sense.
 
-If you have time, file an [Issue on Github](https://github.com/oamerge/oamerge/issues).
+If you have time, file an [Issue on GitHub](https://github.com/oamerge/oamerge/issues).
 
 ## Pull Requests
 
