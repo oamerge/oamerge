@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 
 import replace from '@rollup/plugin-replace'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
+import nodeResolve from '@rollup/plugin-node-resolve'
 
 const { version } = JSON.parse(readFileSync('./package.json', 'utf8'))
 

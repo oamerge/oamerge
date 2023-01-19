@@ -33,12 +33,35 @@ const normalizeInputString = string => {
 	return normalized
 }
 
+const loadGenerators = async moduleNames => {
+	moduleNames = Array.isArray(moduleNames) ? moduleNames : [ moduleNames ]
+	const generators = []
+	let hasErrors
+	for (const name of moduleNames) {
+		try {
+			const mod = await import(name)
+			if (mod?.default) generators.push(mod.default)
+			else {
+				hasErrors = true
+				console.error(`Generator module "${name}" did not have a default export. To use generators with named exports, you will need to use a configuration file.`)
+			}
+		} catch (error) {
+			hasErrors = true
+			console.error(`Generator "${name}" could not be loaded:`, error.code)
+			console.debug(error)
+		}
+	}
+	if (hasErrors) process.exit(1)
+	return generators
+}
+
 sade('oamerge', true)
 	.version(VERSION)
 
 	.option('-c, --config', `Location of the configuration file to use. Default: ${DEFAULT_CONFIG}`)
 	.option('-i, --input', 'Folders to ingest. Multiple allowed, order is preserved.')
 	.option('-o, --output', 'Folder to write generated files.')
+	.option('-g, --generator', 'The name of the generator plugin. Multiple allowed, order is preserved.')
 	.option('--cwd', 'Set the working directory to change path resolution.')
 	.option('--no-colors', 'Disable color printing to console.')
 	.option('-w, --watch', 'Rebuild on detected file changes.')
@@ -48,6 +71,7 @@ sade('oamerge', true)
 	.example('-c my-api.config.js # Use a different configuration file.')
 	.example('-c -i ./folder1 -i ./folder2 # Multiple input folders, use default extension (@) and api prefix (/).')
 	.example('-c -i "dir=./folder1;ext=@;api=/" # Specify all input values (careful to wrap in quotes).')
+	.example('-c -g @oamerge/generator-routes # Use a generator with its default settings.')
 
 	.action(opts => {
 		// These are only used for the CLI, so in order to avoid confusion
@@ -85,7 +109,16 @@ sade('oamerge', true)
 		}
 
 		let start = Date.now()
-		oamerge(opts)
+		loadGenerators(opts.generator)
+			.then(generators => {
+				opts.generators = generators
+				delete opts.generator
+				if (generators.length) {
+					console.info(`Loading generators took ${Date.now() - start}ms`)
+					start = Date.now()
+				}
+				return oamerge(opts)
+			})
 			.then(() => {
 				if (!opts.watch) console.info(`Build completed after ${Date.now() - start}ms.`)
 				process.exit(0)
