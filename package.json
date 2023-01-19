@@ -51,6 +51,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "14.1.0",
     "@rollup/plugin-replace": "4.0.0",
+    "changeset": "^0.2.6",
     "eslint": "8.22.0",
     "mri": "1.2.0",
     "rollup": "2.79.0",
