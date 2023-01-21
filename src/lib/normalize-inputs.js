@@ -18,7 +18,7 @@ export const normalizeInputs = any => {
 			normalized.dir = any
 		}
 	} else if (Array.isArray(any)) {
-		return any.map(normalizeInputs)
+		return any.map(normalizeInputs).flat()
 	} else if (typeof any === 'object') {
 		for (const key in normalized) if (any[key]) normalized[key] = any[key]
 	}
@@ -26,5 +26,5 @@ export const normalizeInputs = any => {
 		console.error('Could not understand how to get "dir" from input:', any)
 		process.exit(1)
 	}
-	return normalized
+	return Array.isArray(normalized) ? normalized : [ normalized ]
 }
