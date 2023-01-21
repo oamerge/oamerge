@@ -10,6 +10,8 @@ export const configWatcherLoader = (absoluteConfigFilepath, watchMode) => {
 
 	let hasLoaded
 
+	// Note that this function is called as an ignored promise, so every possible
+	// error in this function needs to be handled *within* the function.
 	const loadConfigFile = async () => {
 		let hasErrors
 		try {
