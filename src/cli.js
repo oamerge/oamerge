@@ -4,6 +4,7 @@ import sade from 'sade'
 
 import { mutateConsoleLogger } from './lib/mutate-console-logger.js'
 import { configWatcherLoader } from './lib/config-watcher-loader.js'
+import { simpleThrottle } from './lib/simple-throttle.js'
 import { oamerge } from './oamerge.js'
 
 const VERSION = '__VERSION__'
@@ -71,21 +72,8 @@ sade('oamerge', true)
 
 		// Very simple throttle to only run oamerge one at a time, but if the config file
 		// changes while it's running, queue up one more re-run.
-		let running
 		let mostRecentConfig
-		let oneMoreToGo
-		const runOamerge = async () => {
-			if (running) oneMoreToGo = true
-			running = true
-			return oamerge(Object.assign({}, mostRecentConfig || {}, opts))
-				.then(() => {
-					running = false
-					if (oneMoreToGo) {
-						oneMoreToGo = false
-						return runOamerge()
-					}
-				})
-		}
+		const runOamerge = simpleThrottle(() => oamerge(Object.assign({}, mostRecentConfig || {}, opts)))
 
 		const start = Date.now()
 		const success = () => {
