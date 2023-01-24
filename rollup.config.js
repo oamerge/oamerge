@@ -5,16 +5,6 @@ import nodeResolve from '@rollup/plugin-node-resolve'
 
 const { version } = JSON.parse(readFileSync('./package.json', 'utf8'))
 
-const plugins = [
-	nodeResolve(),
-	replace({
-		preventAssignment: true,
-		values: {
-			__VERSION__: version,
-		},
-	}),
-]
-
 export default [
 	{
 		input: 'src/oamerge.js',
@@ -28,6 +18,9 @@ export default [
 				format: 'cjs',
 			},
 		],
+		plugins: [
+			nodeResolve(),
+		],
 	},
 	{
 		input: 'src/cli.js',
@@ -37,6 +30,14 @@ export default [
 				format: 'es',
 			},
 		],
-		plugins,
+		plugins: [
+			nodeResolve(),
+			replace({
+				preventAssignment: true,
+				values: {
+					__VERSION__: version,
+				},
+			}),
+		],
 	},
 ]
