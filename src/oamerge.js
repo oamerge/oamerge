@@ -7,7 +7,7 @@ import { importPlugins } from './lib/import-plugins.js'
 import { fileWatcher } from './lib/file-watcher.js'
 import { loadAllInputs } from './lib/load-all-inputs.js'
 import { executeLoaders } from './lib/execute-loaders.js'
-import { mutateTree } from './lib/mutate-tree.js'
+import { createTree, updateTreeFile } from './lib/mutate-tree.js'
 import { executeGenerators } from './lib/execute-generators.js'
 
 export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch }) => {
@@ -22,7 +22,7 @@ export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch 
 	if (generators?.length) generators = await importPlugins('Generator', generators, cwd)
 
 	// This is the big mutable state, it's the complex part of this library!
-	let TREE = {}
+	let TREE = createTree(inputs)
 
 	// Very simple throttle to only run the generators one *batch* at a time, so they
 	// will all run at least once, but if a change triggers a rebuild in the middle
@@ -39,12 +39,12 @@ export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch 
 		// which is correct behaviour: the final output from the file was undefined.
 		if (waitingForInitialLoad) changedBeforeInitialLoadCompleted = true
 		else {
-			mutateTree(TREE, inputIndex, inputs[inputIndex].api, filepath, loaded)
+			updateTreeFile(TREE, inputIndex, filepath, loaded)
 			generateAll()
 		}
 	}
 	if (watch) {
-		const emitter = fileWatcher(inputs, watch)
+		const emitter = fileWatcher(cwd, inputs)
 		emitter.on('file:+', (inputIndex, filepath) => {
 			executeLoaders(cwd, inputs[inputIndex].dir, filepath, loaders)
 				.then(loaded => handler(inputIndex, filepath, loaded))
@@ -53,9 +53,9 @@ export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch 
 	}
 
 	const load = async () => {
-		TREE = {} // On load, re-initialize the tree entirely, to avoid stateful errors.
+		TREE = createTree(inputs) // On load, re-initialize the tree entirely, to avoid stateful errors.
 		const results = await loadAllInputs(cwd, inputs, loaders)
-		for (const { inputIndex, apiPrefix, filepath, loaded } of results) mutateTree(TREE, inputIndex, apiPrefix, filepath, loaded)
+		for (const { inputIndex, filepath, loaded } of results) updateTreeFile(TREE, inputIndex, filepath, loaded)
 		generateAll()
 	}
 	await load()
