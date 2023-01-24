@@ -1,6 +1,5 @@
 # the usual suspects
 /node_modules
-.DS_Store
 
 # local files
 /configuration.js
@@ -9,3 +8,7 @@
 
 # built files
 /dist
+
+# manually managed files
+/types.d.ts
+/types.test.ts

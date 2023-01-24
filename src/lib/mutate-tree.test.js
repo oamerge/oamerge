@@ -3,7 +3,7 @@ import * as assert from 'uvu/assert'
 
 import { createTree, updateTreeFile } from './mutate-tree.js'
 
-const HANDLER1 = () => {}
+const HANDLER1 = _ => _
 
 const scenarios = [
 	// Each scenario is an array with these ordered properties (the first
