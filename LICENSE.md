@@ -1,4 +1,4 @@
-All contributors to the OpenAPI Merge repository (the "oamerge" command-line utility) voluntarily
+All contributors to the OA Merge repository (the "oamerge" command-line utility) voluntarily
 dedicate this work to the [public domain](http://en.wikipedia.org/wiki/Public_Domain).
 
 This means that all contributors to this creative work voluntarily grant permission to any

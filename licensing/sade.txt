@@ -1,5 +1,5 @@
-The dependency "sade", version "1.8.1", is made available with the following
-permissive license:
+The dependency "sade", version "1.8.1", is included as part of the bundled
+code. It was published using the following permissive license:
 
 ---
 
