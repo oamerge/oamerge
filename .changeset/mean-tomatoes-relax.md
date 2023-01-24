@@ -2,4 +2,4 @@
 "oamerge": patch
 ---
 
-Starting to add the generators functionality.
+Finalizing the loader and generator functionality.
