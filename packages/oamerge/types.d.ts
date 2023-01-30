@@ -63,6 +63,23 @@ export type OamergeLoaderPlugin = (params: OamergeLoaderParameters) => Promise<u
 
 // ======== 3. Generator Plugin Types ========
 
+export interface OamergeTreeInputFiles {
+	/**
+	 * For example "paths/hello/world/get.@.js"
+	 */
+	[filepath: string]: {
+		/**
+		 * The filepath separated list, minus the `api` suffix, e.g.
+		 *    [ 'paths', 'hello', 'world', 'get' ]
+		 */
+		key: string[];
+		/**
+		 * Whatever the loader output is, for this file.
+		 */
+		exports: unknown;
+	},
+}
+
 /**
  * The tree inputs object contains the normalized input properties, and a
  * map of the filtered files in the input directory to their loaded content.
@@ -80,22 +97,7 @@ export interface OamergeTreeInputs {
 	 * The API prefix to use, e.g. "/v1".
 	 */
 	api: string;
-	files: {
-		/**
-		 * For example "paths/hello/world/get.@.js"
-		 */
-		[filepath: string]: {
-			/**
-			 * The filepath separated list, minus the `api` suffix, e.g.
-			 *    [ 'paths', 'hello', 'world', 'get' ]
-			 */
-			key: string[];
-			/**
-			 * Whatever the loader output is, for this file.
-			 */
-			exports: unknown;
-		},
-	},
+	files: OamergeTreeInputFiles;
 }
 export interface OamergeTree {
 	/**
