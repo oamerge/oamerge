@@ -1,6 +1,6 @@
 {
   "name": "oamerge",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Merge and share OpenAPI endpoints and schemas.",
   "bin": "cli.js",
   "type": "module",
