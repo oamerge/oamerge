@@ -21,7 +21,8 @@
   },
   "homepage": "https://oamerge.com",
   "workspaces": [
-    "packages/oamerge"
+    "packages/oamerge",
+    "packages/generator-routes"
   ],
   "devDependencies": {
     "@changesets/cli": "^2.26.0",
