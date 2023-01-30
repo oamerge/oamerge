@@ -9,5 +9,5 @@
 /fiddle-*.js
 
 # built things
-/dist
+/packages/*/dist
 /test

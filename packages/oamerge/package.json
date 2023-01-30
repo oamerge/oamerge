@@ -1,0 +1,50 @@
+{
+  "name": "oamerge",
+  "version": "0.0.0",
+  "description": "Merge and share OpenAPI endpoints and schemas.",
+  "bin": "cli.js",
+  "type": "module",
+  "module": "dist/oamerge.js",
+  "main": "dist/oamerge.cjs",
+  "exports": {
+    ".": {
+      "import": "./dist/oamerge.js",
+      "require": "./dist/oamerge.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "tsc --noEmit",
+    "build": "rollup -c"
+  },
+  "files": [
+    "dist",
+    "licensing",
+    "cli.js",
+    "types.d.ts",
+    "CHANGELOG.md",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oamerge/oamerge.git"
+  },
+  "keywords": [
+    "openapi",
+    "glob",
+    "generator",
+    "oamerge",
+    "merge"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/oamerge/oamerge/issues"
+  },
+  "homepage": "https://oamerge.com",
+  "devDependencies": {
+    "cheap-watch": "1.0.4",
+    "mri": "1.2.0",
+    "sade": "1.8.1"
+  }
+}

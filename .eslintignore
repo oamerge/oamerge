@@ -9,6 +9,5 @@
 # built files
 /dist
 
-# manually managed files
-/types.d.ts
-/types.test.ts
+# type files are manually managed
+*.ts
