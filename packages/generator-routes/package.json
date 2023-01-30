@@ -1,0 +1,43 @@
+{
+  "name": "@oamerge/generator-routes",
+  "version": "0.0.0",
+  "description": "Generate common routes from OpenAPI filepaths using OA Merge.",
+  "type": "module",
+  "module": "dist/generator.js",
+  "main": "dist/generator.cjs",
+  "exports": {
+    ".": {
+      "import": "./dist/generator.js",
+      "require": "./dist/generator.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "files": [
+    "dist",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oamerge/oamerge-generator-routes.git"
+  },
+  "keywords": [
+    "openapi",
+    "glob",
+    "generator",
+    "oamerge",
+    "merge",
+    "router"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/oamerge/oamerge/labels/package%3Agenerator-routes"
+  },
+  "homepage": "https://oamerge.com"
+}
