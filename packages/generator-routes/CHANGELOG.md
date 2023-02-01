@@ -1,5 +1,11 @@
 # @oamerge/generator-routes
 
+## 0.0.3
+
+### Patch Changes
+
+- 0394d1b: Functionality and linkable test framework.
+
 ## 0.0.2
 
 ### Patch Changes
