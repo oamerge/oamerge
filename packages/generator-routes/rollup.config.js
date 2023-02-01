@@ -1,3 +1,5 @@
+import nodeResolve from '@rollup/plugin-node-resolve'
+
 export default [
 	{
 		input: 'src/generator.js',
@@ -10,6 +12,9 @@ export default [
 				file: 'dist/generator.cjs',
 				format: 'cjs',
 			},
+		],
+		plugins: [
+			nodeResolve(),
 		],
 	},
 ]
