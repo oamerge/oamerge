@@ -57,6 +57,27 @@ const scenarios = [
 			],
 		},
 	],
+	// ==========
+	[
+		'Make sure that the underscore file is extracted correctly.',
+		[ { dir: './folder1', ext: '@', api: '/v1' } ],
+		[
+			[ 0, 'paths/hello/world/_.@.js', { summary: 'path item object' } ],
+		],
+		{
+			inputs: [
+				{
+					dir: './folder1', ext: '@', api: '/v1',
+					files: {
+						'paths/hello/world/_.@.js': {
+							key: [ 'paths', 'hello', 'world', '_' ],
+							exports: { summary: 'path item object' },
+						},
+					},
+				},
+			],
+		},
+	],
 ]
 
 test('mutate-tree', () => {
