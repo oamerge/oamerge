@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "changeset": "changeset",
-    "test": "npm run test:lint && npm run test:unit && npm run build -ws --if-present",
+    "test": "npm run test:lint && npm run test:unit && npm run test -ws --if-present",
     "test:lint": "eslint 'packages/*/src/**/*.js' 'packages/*/rollup.config.js' 'packages/oamerge/cli.js'",
     "test:unit": "uvu packages '.test.js$'",
     "build": "npm run build -ws --if-present",
