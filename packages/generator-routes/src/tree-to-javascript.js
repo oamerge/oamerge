@@ -11,8 +11,7 @@ const METHODS_WITH_HANDLERS = [
 	'trace',
 ]
 
-const getPath = (file, api) => {
-	let suffix = file.exports?.$path
+const getPath = (file, api, suffix) => {
 	if (suffix) suffix = (suffix[0] === '/' ? suffix.substring(1) : suffix)
 	else suffix = file.key.slice(1, file.key.length - 1).join('/')
 	return `${api.endsWith('/') ? api : (api + '/')}${suffix}`
@@ -72,10 +71,20 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 			}
 		}
 	}
-	// We loop again, to resolve references.
+	// We loop again, to resolve references and path overwrites.
 	for (const { dir, api, files } of inputs) {
 		for (const filepath of Object.keys(files).sort()) {
 			if (files[filepath].key[0] !== 'paths') continue
+
+			// Here we handle path rewrites.
+			const originalPath = getPath(files[filepath], api)
+			const path = files[filepath].exports?.$path
+				? getPath(files[filepath], api, files[filepath].exports?.$path)
+				: originalPath
+			if (originalPath && path && originalPath !== path) {
+				pathToMethod[path] = pathToMethod[originalPath]
+				delete pathToMethod[originalPath]
+			}
 
 			const lastKey = files[filepath].key[files[filepath].key.length - 1]
 			let ref = lastKey === '_' && files[filepath].exports?.$ref
@@ -97,7 +106,6 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 				continue
 			}
 
-			const path = getPath(files[filepath], api)
 			pathToMethod[path] = pathToMethod[path] || {}
 			// If this path doesn't have a method, use the originating references operation object:
 			for (const method in pathToMethod[referencePath]) {

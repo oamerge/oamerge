@@ -10,12 +10,17 @@ return {
 			ext: '@',
 			api: '/v1',
 			files: {
+				'paths/hello/_.@.js': {
+					key: [ 'paths', 'hello', '_' ],
+					exports: {
+						// The unescaped path string.
+						$path: '/not/hello'
+					},
+				},
 				'paths/hello/get.@.js': {
 					key: [ 'paths', 'hello', 'get' ],
 					exports: {
 						default: _ => _,
-						// The unescaped path string.
-						$path: '/not/hello'
 					},
 				},
 			},
