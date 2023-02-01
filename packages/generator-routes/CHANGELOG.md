@@ -1,5 +1,12 @@
 # @oamerge/generator-routes
 
+## 0.0.4
+
+### Patch Changes
+
+- a951a1a: Add ability to override path name with `$path` export.
+- 55b7f12: Add ability to use underscore file for handler.
+
 ## 0.0.3
 
 ### Patch Changes
