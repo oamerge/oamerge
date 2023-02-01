@@ -11,6 +11,13 @@ const METHODS_WITH_HANDLERS = [
 	'trace',
 ]
 
+const getPath = (file, api) => {
+	let suffix = file.exports?.$path
+	if (suffix) suffix = (suffix[0] === '/' ? suffix.substring(1) : suffix)
+	else suffix = file.key.slice(1, file.key.length - 1).join('/')
+	return `${api.endsWith('/') ? api : (api + '/')}${suffix}`
+}
+
 const parseReference = string => {
 	[ , ...string ] = string.split('/')
 	let segments = []
@@ -54,7 +61,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 			if (files[filepath].key[0] !== 'paths') continue
 			const lastKey = files[filepath].key[files[filepath].key.length - 1]
 			if (files[filepath].exports?.default !== undefined && METHODS_WITH_HANDLERS.includes(lastKey)) {
-				const path = `${api.endsWith('/') ? api : (api + '/')}${files[filepath].key.slice(1, files[filepath].key.length - 1).join('/')}`
+				const path = getPath(files[filepath], api)
 				const method = lastKey.toLowerCase()
 				pathToMethod[path] = pathToMethod[path] || {}
 				pathToMethod[path][method] = {
@@ -90,7 +97,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 				continue
 			}
 
-			const path = `${api.endsWith('/') ? api : (api + '/')}${files[filepath].key.slice(1, files[filepath].key.length - 1).join('/')}`
+			const path = getPath(files[filepath], api)
 			pathToMethod[path] = pathToMethod[path] || {}
 			// If this path doesn't have a method, use the originating references operation object:
 			for (const method in pathToMethod[referencePath]) {

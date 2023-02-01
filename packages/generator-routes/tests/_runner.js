@@ -9,7 +9,6 @@ import { treeToJavascript } from '../src/tree-to-javascript.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const files = await readdir(__dirname).then(items => items.filter(i => i.endsWith('.md')))
-// const files = [ 'references-resolve-to-handlers.md' ]
 
 const CONFIG_LINE = /^```js\s+#config$/
 const EXPECTED_LINE = /^```js\s+#expected$/
