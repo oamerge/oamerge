@@ -17,7 +17,7 @@ const parseFile = async filename => {
 	const string = await readFile(join(__dirname, filename), 'utf8')
 	const config = []
 	const expected = []
-	let currentBlock
+	let currentBlock = ''
 	for (const line of string.split('\n')) {
 		if (line === '```') {
 			currentBlock = undefined

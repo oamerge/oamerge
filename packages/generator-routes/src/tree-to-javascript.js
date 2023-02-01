@@ -71,7 +71,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 			}
 		}
 	}
-	// We loop again, to resolve references and path overwrites.
+	// We loop again, to resolve references, path overwrites, and underscore method handler overrides.
 	for (const { dir, api, files } of inputs) {
 		for (const filepath of Object.keys(files).sort()) {
 			if (files[filepath].key[0] !== 'paths') continue
@@ -87,6 +87,18 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 			}
 
 			const lastKey = files[filepath].key[files[filepath].key.length - 1]
+			const secondToLastKey = files[filepath].key[files[filepath].key.length - 2]
+			if (lastKey === '_' && METHODS_WITH_HANDLERS.includes(secondToLastKey) && files[filepath].exports?.default) {
+				const actualPath = path.split('/')
+				actualPath.pop()
+				pathToMethod[actualPath.join('/')][secondToLastKey] = {
+					dir,
+					filepath,
+					handler: true,
+				}
+				continue
+			}
+
 			let ref = lastKey === '_' && files[filepath].exports?.$ref
 			if (!ref) continue
 
