@@ -43,29 +43,29 @@ return {
 The `alias` inherits all methods, but its own methods will overwrite referenced ones.
 
 ```js #expected
-import handler_0 from "../folder1/paths/hello/get.@.js"
-import handler_1 from "../folder1/paths/alias/patch.@.js"
-import handler_2 from "../folder1/paths/hello/patch.@.js"
+import handler_0 from '../folder1/paths/hello/get.@.js'
+import handler_1 from '../folder1/paths/alias/patch.@.js'
+import handler_2 from '../folder1/paths/hello/patch.@.js'
 
 export const routes = [
 	{
-		path: "/v1/alias",
-		method: "get",
+		path: '/v1/alias',
+		method: 'get',
 		handler: handler_0,
 	},
 	{
-		path: "/v1/alias",
-		method: "patch",
+		path: '/v1/alias',
+		method: 'patch',
 		handler: handler_1,
 	},
 	{
-		path: "/v1/hello",
-		method: "get",
+		path: '/v1/hello',
+		method: 'get',
 		handler: handler_0,
 	},
 	{
-		path: "/v1/hello",
-		method: "patch",
+		path: '/v1/hello',
+		method: 'patch',
 		handler: handler_2,
 	},
 ]

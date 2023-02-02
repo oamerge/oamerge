@@ -30,12 +30,12 @@ return {
 ```
 
 ```js #expected
-import handler_0 from "../folder1/paths/hello/get.@.js"
+import handler_0 from '../folder1/paths/hello/get.@.js'
 
 export const routes = [
 	{
-		path: "/v1/not/hello",
-		method: "get",
+		path: '/v1/not/hello',
+		method: 'get',
 		handler: handler_0,
 	},
 ]

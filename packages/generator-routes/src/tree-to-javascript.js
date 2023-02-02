@@ -24,9 +24,11 @@ const parseReference = string => {
 	return segments
 }
 
+const jsString = string => string.includes("'") ? JSON.stringify(string) : `'${string}'`
+
 const makeRoute = ({ path, method, importsIndex }) => `\t{
-\t\tpath: ${JSON.stringify(path)},
-\t\tmethod: ${JSON.stringify(method)},
+\t\tpath: ${jsString(path)},
+\t\tmethod: ${jsString(method)},
 \t\thandler: handler_${importsIndex},
 \t},`
 
@@ -147,7 +149,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 		}
 	}
 
-	let importsLines = imports.map((filepath, index) => `import handler_${index} from ${JSON.stringify(relative(buildPath, resolve(buildPath, join(cwd, filepath))))}`)
+	let importsLines = imports.map((filepath, index) => `import handler_${index} from ${jsString(relative(buildPath, resolve(buildPath, join(cwd, filepath))))}`)
 	importsLines = importsLines.length
 		? `${importsLines.join('\n')}\n\n`
 		: ''
