@@ -21,6 +21,7 @@ export const oamerge = async ({ input, inputs, output, generators, loaders, cwd,
 
 	if (loaders?.length) loaders = await importPlugins('Loader', loaders, cwd)
 	if (generators?.length) generators = await importPlugins('Generator', generators, cwd)
+	if (!generators?.length) console.error('No output generators configured!')
 
 	// This is the big mutable state, it's the complex part of this library!
 	let TREE = createTree(inputs)
@@ -57,7 +58,7 @@ export const oamerge = async ({ input, inputs, output, generators, loaders, cwd,
 		TREE = createTree(inputs) // On load, re-initialize the tree entirely, to avoid stateful errors.
 		const results = await loadAllInputs(cwd, inputs, loaders)
 		for (const { inputIndex, filepath, loaded } of results) updateTreeFile(TREE, inputIndex, filepath, loaded)
-		generateAll()
+		await executeGenerators(cwd, output, generators, TREE)
 	}
 	await load()
 	let retries = 0
@@ -67,6 +68,4 @@ export const oamerge = async ({ input, inputs, output, generators, loaders, cwd,
 		await load()
 		if (retries > 2) console.warn(`Files were changed in between initial file load and first completion. This happened ${retries} times, which is unusual and probably means some changes are introducing a circular file update trigger.`)
 	}
-
-	console.debug({ inputs, output, generators, loaders, cwd, watch })
 }
