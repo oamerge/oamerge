@@ -3,8 +3,8 @@ import { dirname, join } from 'node:path'
 
 import { treeToJavascript } from './tree-to-javascript.js'
 
-export const generator = ({ output: outputDirFilepath }) => async ({ cwd, output: outputDir, TREE: { inputs } }) => {
-	const outputFullFilepath = join(outputDir, outputDirFilepath)
+export default opts => async ({ cwd, output: outputDir, TREE: { inputs } }) => {
+	const outputFullFilepath = join(outputDir, opts?.output || 'routes.js')
 	await mkdir(dirname(outputFullFilepath), { recursive: true })
 	const code = treeToJavascript({ cwd, outputDir: dirname(outputFullFilepath), inputs })
 	await writeFile(outputFullFilepath, code, 'utf8')
