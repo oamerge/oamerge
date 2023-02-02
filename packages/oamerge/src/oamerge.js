@@ -10,13 +10,14 @@ import { executeLoaders } from './lib/execute-loaders.js'
 import { createTree, updateTreeFile } from './lib/mutate-tree.js'
 import { executeGenerators } from './lib/execute-generators.js'
 
-export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch }) => {
+export const oamerge = async ({ input, inputs, output, generators, loaders, cwd, watch }) => {
 	const absoluteResolver = dir => isAbsolute(dir) ? dir : resolve(cwd, dir)
 	if (output) output = absoluteResolver(output)
 	await mkdir(output, { recursive: true })
 
-	if (inputs) inputs = normalizeInputs(inputs)
-	for (const input of inputs) if (input.dir) input.dir = absoluteResolver(input.dir)
+	inputs = normalizeInputs([ input, inputs ].filter(Boolean).flat())
+	if (!inputs.length) console.error('No inputs detected!')
+	console.debug('Normalized inputs:\n' + inputs.map(i => `  dir=${i.dir}; ext=${i.ext}; api=${i.api}`).join('\n'))
 
 	if (loaders?.length) loaders = await importPlugins('Loader', loaders, cwd)
 	if (generators?.length) generators = await importPlugins('Generator', generators, cwd)
