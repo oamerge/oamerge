@@ -1,5 +1,11 @@
 # @oamerge/generator-routes
 
+## 0.0.5
+
+### Patch Changes
+
+- 266ef3f: Export default and not require options as per documentation.
+
 ## 0.0.4
 
 ### Patch Changes

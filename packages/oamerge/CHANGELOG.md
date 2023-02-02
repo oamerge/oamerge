@@ -1,5 +1,13 @@
 # oamerge
 
+## 0.0.3
+
+### Patch Changes
+
+- 35189aa: Handle inputs better e.g. "input" versus "inputs".
+- 7e4f4d7: Make sure multiple path renames are handled correctly across inputs.
+- 35db5b9: Add default loaders for JavaScript and JSON. Later loaders will override them.
+
 ## 0.0.2
 
 ### Patch Changes
