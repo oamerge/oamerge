@@ -11,4 +11,6 @@ const loadInputFiles = (cwd, loaders) => async ({ dir, ext }, inputIndex) => {
 	))
 }
 
-export const loadAllInputs = async (cwd, inputs, loaders) => Promise.all(inputs.map(loadInputFiles(cwd, loaders)))
+export const loadAllInputs = async (cwd, inputs, loaders) => Promise
+	.all(inputs.map(loadInputFiles(cwd, loaders)))
+	.then(listOfLists => listOfLists.flat())
