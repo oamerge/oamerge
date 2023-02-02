@@ -9,6 +9,7 @@
     "test:lint": "eslint 'packages/*/src/**/*.js' 'packages/*/rollup.config.js' 'packages/oamerge/cli.js'",
     "test:unit": "uvu packages '.test.js$'",
     "build": "npm run build -ws --if-present",
+    "postbuild": "node packages/oamerge/dist/cli.js --verbose --cwd examples/simple-api --config oamerge.config.js",
     "release": "npm run build && changeset publish"
   },
   "repository": {
