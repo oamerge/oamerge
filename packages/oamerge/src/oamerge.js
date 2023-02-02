@@ -10,16 +10,18 @@ import { executeLoaders } from './lib/execute-loaders.js'
 import { createTree, updateTreeFile } from './lib/mutate-tree.js'
 import { executeGenerators } from './lib/execute-generators.js'
 
-export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch }) => {
+export const oamerge = async ({ input, inputs, output, generators, loaders, cwd, watch }) => {
 	const absoluteResolver = dir => isAbsolute(dir) ? dir : resolve(cwd, dir)
 	if (output) output = absoluteResolver(output)
 	await mkdir(output, { recursive: true })
 
-	if (inputs) inputs = normalizeInputs(inputs)
-	for (const input of inputs) if (input.dir) input.dir = absoluteResolver(input.dir)
+	inputs = normalizeInputs([ input, inputs ].filter(Boolean).flat())
+	if (!inputs.length) console.error('No inputs detected!')
+	console.debug('Normalized inputs:\n' + inputs.map(i => `  dir=${i.dir}; ext=${i.ext}; api=${i.api}`).join('\n'))
 
 	if (loaders?.length) loaders = await importPlugins('Loader', loaders, cwd)
 	if (generators?.length) generators = await importPlugins('Generator', generators, cwd)
+	if (!generators?.length) console.error('No output generators configured!')
 
 	// This is the big mutable state, it's the complex part of this library!
 	let TREE = createTree(inputs)
@@ -56,7 +58,7 @@ export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch 
 		TREE = createTree(inputs) // On load, re-initialize the tree entirely, to avoid stateful errors.
 		const results = await loadAllInputs(cwd, inputs, loaders)
 		for (const { inputIndex, filepath, loaded } of results) updateTreeFile(TREE, inputIndex, filepath, loaded)
-		generateAll()
+		await executeGenerators(cwd, output, generators, TREE)
 	}
 	await load()
 	let retries = 0
@@ -66,6 +68,4 @@ export const oamerge = async ({ inputs, output, generators, loaders, cwd, watch 
 		await load()
 		if (retries > 2) console.warn(`Files were changed in between initial file load and first completion. This happened ${retries} times, which is unusual and probably means some changes are introducing a circular file update trigger.`)
 	}
-
-	console.debug({ inputs, output, generators, loaders, cwd, watch })
 }

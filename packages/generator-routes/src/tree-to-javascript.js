@@ -24,9 +24,11 @@ const parseReference = string => {
 	return segments
 }
 
+const jsString = string => string.includes("'") ? JSON.stringify(string) : `'${string}'`
+
 const makeRoute = ({ path, method, importsIndex }) => `\t{
-\t\tpath: ${JSON.stringify(path)},
-\t\tmethod: ${JSON.stringify(method)},
+\t\tpath: ${jsString(path)},
+\t\tmethod: ${jsString(method)},
 \t\thandler: handler_${importsIndex},
 \t},`
 
@@ -72,6 +74,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 		}
 	}
 	// We loop again, to resolve references, path overwrites, and underscore method handler overrides.
+	const rewrittenPaths = {}
 	for (const { dir, api, files } of inputs) {
 		for (const filepath of Object.keys(files).sort()) {
 			if (files[filepath].key[0] !== 'paths') continue
@@ -82,8 +85,13 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 				? getPath(files[filepath], api, files[filepath].exports?.$path)
 				: originalPath
 			if (originalPath && path && originalPath !== path) {
-				pathToMethod[path] = pathToMethod[originalPath]
-				delete pathToMethod[originalPath]
+				if (rewrittenPaths[originalPath] && rewrittenPaths[originalPath] !== path) {
+					console.warn(`The path rewrite "${originalPath}" => "${path}" has a conflict with "${originalPath}" => "${rewrittenPaths[originalPath]}" in file "${join(dir, filepath)}".`)
+				} else if (!rewrittenPaths[originalPath]) {
+					rewrittenPaths[originalPath] = path
+					pathToMethod[path] = pathToMethod[originalPath]
+					delete pathToMethod[originalPath]
+				}
 			}
 
 			const lastKey = files[filepath].key[files[filepath].key.length - 1]
@@ -147,7 +155,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 		}
 	}
 
-	let importsLines = imports.map((filepath, index) => `import handler_${index} from ${JSON.stringify(relative(buildPath, resolve(buildPath, join(cwd, filepath))))}`)
+	let importsLines = imports.map((filepath, index) => `import handler_${index} from ${jsString(relative(buildPath, resolve(buildPath, join(cwd, filepath))))}`)
 	importsLines = importsLines.length
 		? `${importsLines.join('\n')}\n\n`
 		: ''

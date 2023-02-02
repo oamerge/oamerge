@@ -41,12 +41,12 @@ The `#expected` block is compared to the generated output by string strict equal
 is here is *exactly* what will be asserted as equal. (In other words, no comments here.)
 
 ```js #expected
-import handler_0 from "../folder1/paths/hello/world/get.@.js"
+import handler_0 from '../folder1/paths/hello/world/get.@.js'
 
 export const routes = [
 	{
-		path: "/v1/hello/world",
-		method: "get",
+		path: '/v1/hello/world',
+		method: 'get',
 		handler: handler_0,
 	},
 ]

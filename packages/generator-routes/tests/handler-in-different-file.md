@@ -31,12 +31,12 @@ return {
 Because the underscore file is more specific, that handler is used instead of the first.
 
 ```js #expected
-import handler_0 from "../folder1/paths/hello/get/_.@.js"
+import handler_0 from '../folder1/paths/hello/get/_.@.js'
 
 export const routes = [
 	{
-		path: "/v1/hello",
-		method: "get",
+		path: '/v1/hello',
+		method: 'get',
 		handler: handler_0,
 	},
 ]
