@@ -27,7 +27,8 @@
   "workspaces": [
     "packages/oamerge",
     "packages/generator-routes",
-    "packages/generator-security"
+    "packages/generator-security",
+    "packages/loader-textfile"
   ],
   "devDependencies": {
     "@changesets/cli": "^2.26.0",
