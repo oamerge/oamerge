@@ -1,5 +1,11 @@
 # @oamerge/generator-routes
 
+## 0.0.6
+
+### Patch Changes
+
+- b51788d: Optionally export security exports with routes.
+
 ## 0.0.5
 
 ### Patch Changes
