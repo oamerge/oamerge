@@ -1,0 +1,41 @@
+{
+  "name": "@oamerge/loader-textfile",
+  "version": "0.0.0",
+  "description": "Load text files as strings in OA Merge.",
+  "type": "module",
+  "module": "dist/loader.js",
+  "main": "dist/loader.cjs",
+  "exports": {
+    ".": {
+      "import": "./dist/loader.js",
+      "require": "./dist/loader.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "files": [
+    "dist",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oamerge/oamerge-loader-textfile.git"
+  },
+  "keywords": [
+    "openapi",
+    "glob",
+    "loader",
+    "oamerge"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/oamerge/oamerge/labels/package%3Aloader-textfile"
+  },
+  "homepage": "https://oamerge.com"
+}
