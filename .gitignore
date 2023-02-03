@@ -3,6 +3,7 @@
 .DS_Store
 
 # personal local files
+/NOTES
 /configuration.js
 /configuration.sh
 /fiddle.js
@@ -10,4 +11,5 @@
 
 # built things
 /packages/*/dist
+/examples/*/build
 /test

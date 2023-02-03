@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "changeset": "changeset",
-    "test": "npm run test:lint && npm run test:unit && npm run test -ws --if-present",
+    "test": "npm run test:lint && npm run test:unit && npm run test -ws --if-present && npm run test:examples",
     "test:lint": "eslint 'packages/*/src/**/*.js' 'packages/*/rollup.config.js' 'packages/oamerge/cli.js'",
     "test:unit": "uvu packages '.test.js$'",
+    "test:examples": "npm run test:examples:build && npm run test:examples:test",
+    "test:examples:build": "for d in examples/*/; do node packages/oamerge/src/cli.js --verbose --cwd $d --config oamerge.config.js ; done",
+    "test:examples:test": "node examples/assert-builds.js",
     "build": "npm run build -ws --if-present",
-    "postbuild": "node packages/oamerge/dist/cli.js --verbose --cwd examples/simple-api --config oamerge.config.js",
     "release": "npm run build && changeset publish"
   },
   "repository": {

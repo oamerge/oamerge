@@ -1,4 +1,4 @@
-import routes from '../../packages/generator-routes/dist/generator.js'
+import routes from '../../packages/generator-routes/src/generator.js'
 
 export default {
 	inputs: [
