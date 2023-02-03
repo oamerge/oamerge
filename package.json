@@ -11,7 +11,8 @@
     "test:examples": "npm run test:examples:build && npm run test:examples:test",
     "test:examples:build": "for d in examples/*/; do node packages/oamerge/src/cli.js --verbose --cwd $d --config oamerge.config.js ; done",
     "test:examples:test": "node examples/assert-builds.js",
-    "build": "npm run build -ws --if-present",
+    "demo": "node packages/oamerge/src/cli.js --verbose --cwd $DIR --config oamerge.config.js",
+    "build": "npm run build -ws --if-present -- --failAfterWarnings",
     "release": "npm run build && changeset publish"
   },
   "repository": {
