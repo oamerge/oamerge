@@ -26,15 +26,18 @@ const parseReference = string => {
 
 const jsString = string => string.includes("'") ? JSON.stringify(string) : `'${string}'`
 
-const makeRoute = ({ path, method, importsIndex }) => `\t{
-\t\tpath: ${jsString(path)},
-\t\tmethod: ${jsString(method)},
-\t\thandler: handler_${importsIndex},
-\t},`
+const makeRoute = includeSecurity => ({ path, method, importsIndex }) => [
+	'\t{',
+	`\t\tpath: ${jsString(path)},`,
+	`\t\tmethod: ${jsString(method)},`,
+	`\t\thandler: handler_${importsIndex},`,
+	includeSecurity && `\t\tsecurity: security_${importsIndex},`,
+	'\t},',
+].filter(Boolean).join('\n')
 
 const routeSorter = (a, b) => (a.path + a.method + a.importsIndex.toString()).localeCompare(b.path + b.method + b.importsIndex.toString())
 
-export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
+export const treeToJavascript = ({ cwd, outputDir, inputs, includeSecurity }) => {
 	const buildPath = resolve(cwd, outputDir)
 
 	/*
@@ -69,6 +72,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 					dir,
 					filepath,
 					handler: !!files[filepath].exports?.default,
+					security: !!files[filepath].exports?.security,
 				}
 			}
 		}
@@ -103,6 +107,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 					dir,
 					filepath,
 					handler: true,
+					security: files[filepath].exports?.security,
 				}
 				continue
 			}
@@ -139,6 +144,7 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 	and an exported list of router-consumable objects.
 	*/
 	const imports = []
+	const importIndexToSecurity = {}
 	const routes = []
 	// Resolve the handlers as default exports, removing nullified handlers.
 	for (const path of Object.keys(pathToMethod).sort()) {
@@ -150,17 +156,21 @@ export const treeToJavascript = ({ cwd, outputDir, inputs }) => {
 					importsIndex = imports.length
 					imports.push(filepath)
 				}
+				importIndexToSecurity[importsIndex] = pathToMethod[path][method].security
 				routes.push({ path, method, importsIndex })
 			}
 		}
 	}
 
-	let importsLines = imports.map((filepath, index) => `import handler_${index} from ${jsString(relative(buildPath, resolve(buildPath, join(cwd, filepath))))}`)
+	const getImportSignature = index => includeSecurity && importIndexToSecurity[index]
+		? `handler_${index}, { security as security_${index} }`
+		: `handler_${index}`
+	let importsLines = imports.map((filepath, index) => `import ${getImportSignature(index)} from ${jsString(relative(buildPath, resolve(buildPath, join(cwd, filepath))))}`)
 	importsLines = importsLines.length
 		? `${importsLines.join('\n')}\n\n`
 		: ''
 	const routesLines = routes.length
-		? `export const routes = [\n${routes.sort(routeSorter).map(makeRoute).join('\n')}\n]\n`
+		? `export const routes = [\n${routes.sort(routeSorter).map(makeRoute(includeSecurity)).join('\n')}\n]\n`
 		: 'export const routes = []\n'
 
 	return importsLines + routesLines
