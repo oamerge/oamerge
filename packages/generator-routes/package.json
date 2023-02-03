@@ -1,6 +1,6 @@
 {
   "name": "@oamerge/generator-routes",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Generate common routes from OpenAPI filepaths using OA Merge.",
   "type": "module",
   "module": "dist/generator.js",

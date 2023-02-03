@@ -1,6 +1,6 @@
 {
   "name": "@oamerge/generator-security",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generate security scheme handlers from OpenAPI filepaths using OA Merge.",
   "type": "module",
   "module": "dist/generator.js",

@@ -1,5 +1,11 @@
 # @oamerge/generator-routes
 
+## 0.0.7
+
+### Patch Changes
+
+- 8c0dc44: Add support for loading text files.
+
 ## 0.0.6
 
 ### Patch Changes
