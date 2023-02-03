@@ -69,7 +69,8 @@ export interface OamergeTreeInputFiles {
 	 */
 	[filepath: string]: {
 		/**
-		 * The filepath separated list, minus the `api` suffix, e.g.
+		 * The filepath separated list, minus the `ext` suffix and file
+		 * extension , e.g.
 		 *    [ 'paths', 'hello', 'world', 'get' ]
 		 */
 		key: string[];
