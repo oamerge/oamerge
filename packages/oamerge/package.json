@@ -28,7 +28,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oamerge/oamerge.git"
+    "url": "https://github.com/oamerge/oamerge.git",
+    "directory": "packages/oamerge"
   },
   "keywords": [
     "openapi",

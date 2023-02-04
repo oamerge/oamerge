@@ -23,7 +23,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oamerge/oamerge-generator-security.git"
+    "url": "https://github.com/oamerge/oamerge.git",
+    "directory": "packages/generator-security"
   },
   "keywords": [
     "openapi",

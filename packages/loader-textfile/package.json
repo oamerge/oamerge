@@ -22,7 +22,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oamerge/oamerge-loader-textfile.git"
+    "url": "https://github.com/oamerge/oamerge.git",
+    "directory": "packages/loader-textfile"
   },
   "keywords": [
     "openapi",
